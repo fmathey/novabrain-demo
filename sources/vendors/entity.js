@@ -1,5 +1,6 @@
 'use strict';
 
+var Timeout  = require('./timeout.js');
 var Vector   = require('./vector.js');
 var Color    = require('./color.js');
 
@@ -10,16 +11,14 @@ class Entity {
             throw new Error('Vector instance expected');
         }
 
-        this.scene    = scene;
-        this.position = position;
-        this.family   = family || 0;
-        this.size     = 10;
-        this.move     = new Vector();
-        this.velocity = 0.01 + Math.random() * 0.005;
-        this.color    = color || Color.grey();
-
-        this.lastActionTime = 0;
-        this.timeToNextAction = Math.random() * 800 + 50;
+        this.scene       = scene;
+        this.position    = position;
+        this.family      = family || 0;
+        this.size        = 10;
+        this.move        = new Vector();
+        this.velocity    = 0.01 + Math.random() * 0.005;
+        this.color       = color || Color.grey();
+        this.moveTimeout = new Timeout(50, 800);
     }
 
     find() {
@@ -51,11 +50,9 @@ class Entity {
 
     update(time) {
 
-        if (time - this.lastActionTime > this.timeToNextAction) {
+        this.moveTimeout.update(time, () => {
             this.move.apply(this.target(this.find()));
-            this.lastActionTime = time;
-            this.timeToNextAction = Math.random() * 800 + 50;
-        }
+        });
 
         this.move.applyForce(this.scene.friction);
         this.move.applyForce(this.velocity);

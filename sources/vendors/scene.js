@@ -1,9 +1,10 @@
 'use strict';
 
-var Vector = require('./vector.js');
-var Area   = require('./area.js');
-var Entity = require('./entity.js');
-var Food   = require('./food.js');
+var Vector  = require('./vector.js');
+var Area    = require('./area.js');
+var Entity  = require('./entity.js');
+var Food    = require('./food.js');
+var Timeout = require('./timeout.js');
 
 class Scene {
 
@@ -15,11 +16,18 @@ class Scene {
 
         this.stats = {};
 
+        this.feedTimout = new Timeout(2000, 5000);
+        this.fitnessTimout = new Timeout(20000);
+
         this.setStat('entities.count');
         this.setStat('family0.count');
         this.setStat('family0.foods');
         this.setStat('family1.count');
         this.setStat('family1.foods');
+    }
+
+    getTime() {
+        return this.engine.clock.getTime();
     }
 
     setStat(key, value) {
@@ -38,6 +46,14 @@ class Scene {
 
     update(time) {
 
+        this.feedTimout.update(time, () => {
+            this.feed();
+        });
+
+        this.fitnessTimout.update(time, () => {
+            this.fitness();
+        });
+
         for (var i in this.entities) {
             this.entities[i].update(time);
         }
@@ -49,6 +65,7 @@ class Scene {
         for (var i in this.foods) {
             this.foods[i].draw(time);
         }
+
         for (var i in this.entities) {
             this.entities[i].draw(time);
         }

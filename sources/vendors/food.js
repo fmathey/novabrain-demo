@@ -1,6 +1,6 @@
 'use strict';
 
-var Color =require('./color.js');
+var Color = require('./color.js');
 
 class Food {
     constructor(scene, position) {
@@ -15,7 +15,7 @@ class Food {
         ctx.translate(this.position.x, this.position.y);
         ctx.beginPath();
         ctx.arc(0, 0, this.size, 0, 2 * Math.PI, false);
-        ctx.fillStyle = Color.green().toString();
+        ctx.fillStyle = Color.green().toString() ;
         ctx.fill();
         ctx.closePath();
         ctx.restore();

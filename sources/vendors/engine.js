@@ -1,5 +1,6 @@
 'use strict';
 
+var Clock = require('./clock.js');
 var Scene = require('./scene.js');
 
 class Engine {
@@ -10,6 +11,9 @@ class Engine {
         this.canvas.width  = window.innerWidth;
         this.canvas.height = window.innerHeight;
         this.context       = this.canvas.getContext('2d');
+        this.clock         = new Clock();
+        this.continue      = true;
+        this.fps           = 100;
         this.scene         = null;
 
         window.onresize = (e) => {
@@ -18,47 +22,33 @@ class Engine {
         };
     }
 
-    run(scene) {
-
+    load(scene) {
         if (!(scene instanceof Scene)) {
             throw new Error('Scene instance expected');
         }
+        this.scene = scene;
+        return this;
+    }
 
-        var startTime = (new Date()).getTime();
+    run() {
 
-        var feed = () => {
+        if (!(this.scene instanceof Scene)) {
+            throw new Error('Scene instance expected');
+        }
+
+        var process = () => {
             setTimeout(() => {
-                scene.feed();
-                feed();
-            }, 2000 + Math.random() * 5000);
-        };
-
-        var fitness = () => {
-            setTimeout(() => {
-                scene.fitness();
-                fitness();
-            }, 20000);
-        };
-
-        var update = () => {
-            setTimeout(() => {
-                scene.update((new Date()).getTime() - startTime);
-                update();
-            }, 1000 / 100);
-        };
-
-        var draw = () => {
-            setTimeout(() => {
+                var time = this.clock.getTime();
+                this.scene.update(time);
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                scene.draw((new Date()).getTime() - startTime);
-                draw();
-            }, 1000 / 100);
+                this.scene.draw(time);
+                if (this.continue) {
+                    process();
+                }
+            }, 1000 / this.fps);
         };
 
-        feed();
-        fitness();
-        update();
-        draw();
+        process();
     }
 }
 
