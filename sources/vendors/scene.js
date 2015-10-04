@@ -16,8 +16,8 @@ class Scene {
 
         this.stats = {};
 
-        this.feedTimout = new Timeout(2000, 5000);
-        this.fitnessTimout = new Timeout(20000);
+        this.feedTimout = new Timeout(500, 1000);
+        this.fitnessTimout = new Timeout(10000);
 
         this.setStat('entities.count');
         this.setStat('family0.count');
@@ -115,6 +115,7 @@ class Scene {
                 this.addStat('family' + this.entities[i].family + '.count', -1);
                 this.entities.splice(i, 1);
                 this.setStat('entities.count', this.entities.length);
+                this.feedTimout = new Timeout(500 + 20000 / this.entities.length, 1000 + 5000 / this.entities.length);
             }
         }
         return this;
