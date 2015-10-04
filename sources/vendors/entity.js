@@ -63,7 +63,7 @@ class Entity {
         for (var i in this.scene.foods) {
             var food = this.scene.foods[i];
             if (this.position.getDistance(food.position) <= this.size + 2) {
-                var increment = Math.round(food.size / 2);
+                var increment = Math.round(food.size / 3);
                 this.scene.foods.splice(i, 1);
                 this.size += increment;
                 this.scene.addStat('family' + this.family + '.foods', increment);
