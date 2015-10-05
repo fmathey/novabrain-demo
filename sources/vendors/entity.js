@@ -11,14 +11,17 @@ class Entity {
             throw new Error('Vector instance expected');
         }
 
-        this.scene       = scene;
-        this.position    = position;
-        this.family      = family || 0;
-        this.size        = 10;
-        this.move        = new Vector();
-        this.velocity    = 0.01 + Math.random() * 0.005;
-        this.color       = color || Color.grey();
-        this.moveTimeout = new Timeout(50, 800);
+        this.id             = scene.entities.length;
+        this.scene          = scene;
+        this.position       = position;
+        this.family         = family || 0;
+        this.size           = 10;
+        this.move           = new Vector();
+        this.velocity       = 0.01 + Math.random() * 0.005;
+        this.color          = color || Color.grey();
+        this.lifeTime       = 10000 + Math.random() * 60000;
+        this.moveTimeout    = new Timeout(50, 800);
+        this.fitnessTimeout = new Timeout(10000);
     }
 
     find() {
@@ -50,6 +53,10 @@ class Entity {
 
     update(time) {
 
+        this.fitnessTimeout.update(time, () => {
+            this.fitness();
+        });
+
         this.moveTimeout.update(time, () => {
             this.move.apply(this.target(this.find()));
         });
@@ -66,7 +73,8 @@ class Entity {
                 var increment = Math.round(food.size / 3);
                 this.scene.foods.splice(i, 1);
                 this.size += increment;
-                this.scene.addStat('family' + this.family + '.foods', increment);
+                this.scene.stats.increment('family' + this.family + '.foods', increment);
+                this.lifeTime += increment * 5000;
             }
         }
 
@@ -97,9 +105,20 @@ class Entity {
 
         ctx.restore();
 
-        //ctx.fillStyle = '#000000';
-        //ctx.fillText(this.stats.eatenFoods, this.size + 5, 0);
+        return this;
+    }
 
+    fitness(value) {
+        value = value || 1;
+        this.size -= value;
+        this.lifeTime -= 500 + Math.random() * 1000;
+        return this;
+    }
+
+    kill() {
+        this.scene.stats.decrement('family' + this.family + '.count');
+        this.scene.entities.splice(this.id, 1);
+        this.scene.stats.set('entities.count', this.length);
         return this;
     }
 }

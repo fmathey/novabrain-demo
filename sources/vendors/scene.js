@@ -5,58 +5,45 @@ var Area    = require('./area.js');
 var Entity  = require('./entity.js');
 var Food    = require('./food.js');
 var Timeout = require('./timeout.js');
+var Stats   = require('./stats.js');
 
 class Scene {
 
     constructor(engine) {
-        this.engine = engine;
-        this.friction = 0.01;
-        this.entities = [];
-        this.foods = [];
+        this.engine      = engine;
+        this.friction    = 0.01;
+        this.entities    = [];
+        this.foods       = [];
+        this.stats       = new Stats();
+        this.feedTimeout = new Timeout(500, 1000);
 
-        this.stats = {};
-
-        this.feedTimout = new Timeout(500, 1000);
-        this.fitnessTimout = new Timeout(10000);
-
-        this.setStat('entities.count');
-        this.setStat('family0.count');
-        this.setStat('family0.foods');
-        this.setStat('family1.count');
-        this.setStat('family1.foods');
-    }
-
-    getTime() {
-        return this.engine.clock.getTime();
-    }
-
-    setStat(key, value) {
-        this.stats[key] = value || 0;
-        return this;
-    }
-
-    addStat(key, value) {
-        this.setStat(key, this.getStat(key) + (value || 0));
-        return this;
-    }
-
-    getStat(key) {
-        return this.stats[key] ? this.stats[key] : 0;
+        this.stats.set('entities.count');
+        this.stats.set('family0.count');
+        this.stats.set('family0.foods');
+        this.stats.set('family1.count');
+        this.stats.set('family1.foods');
     }
 
     update(time) {
 
-        this.feedTimout.update(time, () => {
+        this.feedTimeout.update(time, () => {
             this.feed();
         });
 
-        this.fitnessTimout.update(time, () => {
-            this.fitness();
-        });
-
         for (var i in this.entities) {
-            this.entities[i].update(time);
+            if (this.entities[i].lifeTime > time) {
+                this.entities[i].update(time);
+            } else {
+                this.stats.decrement('family' + this.entities[i].family + '.count');
+                this.entities.splice(i, 1);
+                this.stats.set('entities.count', this.entities.length);
+                this.feedTimeout = new Timeout(
+                    500 + 20000 / this.entities.length,
+                    1000 + 10000 / this.entities.length
+                );
+            }
         }
+
         return this;
     }
 
@@ -78,7 +65,7 @@ class Scene {
 
         i = 0;
         for (var key in this.stats) {
-            ctx.fillText(key + ': ' + this.getStat(key), 20, 30 + 20 * i);
+            ctx.fillText(key + ': ' + this.stats.get(key), 20, 30 + 20 * i);
             i++;
         }
 
@@ -90,8 +77,8 @@ class Scene {
     populate(count, area, family, color) {
         count = count || 1;
 
-        this.addStat('entities.count', count);
-        this.addStat('family' + family + '.count', count);
+        this.stats.increment('entities.count', count);
+        this.stats.set('family' + family + '.count', count);
 
         for (var i = 0; i < count; i++) {
             this.entities.push((new Entity(this, this.getRandomPosition(area), family, color)));
@@ -103,20 +90,6 @@ class Scene {
         count = count || 1;
         for (var i = 0; i < count; i++) {
             this.foods.push(new Food(this, this.getRandomPosition(area)));
-        }
-        return this;
-    }
-
-    fitness(value) {
-        value = value || 1;
-        for (var i in this.entities) {
-            this.entities[i].size -= value;
-            if (this.entities[i].size < 5) {
-                this.addStat('family' + this.entities[i].family + '.count', -1);
-                this.entities.splice(i, 1);
-                this.setStat('entities.count', this.entities.length);
-                this.feedTimout = new Timeout(500 + 20000 / this.entities.length, 1000 + 5000 / this.entities.length);
-            }
         }
         return this;
     }

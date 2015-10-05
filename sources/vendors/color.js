@@ -38,6 +38,8 @@ class Color {
     }
 }
 
+Color.black = function() { return new Color(  0,   0,   0); };
+Color.white = function() { return new Color(255, 255, 255); };
 Color.red   = function() { return new Color(255,   0,   0); };
 Color.green = function() { return new Color(  0, 255,   0); };
 Color.blue  = function() { return new Color(  0,   0, 255); };
