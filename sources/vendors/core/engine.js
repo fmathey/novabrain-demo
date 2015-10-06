@@ -3,6 +3,17 @@
 var Clock = require('./clock');
 var Scene = require('./scene');
 
+var requestAnimationFrame = (function() {
+    return (
+        window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.msRequestAnimationFrame
+    );
+})();
+
+window.requestAnimationFrame = requestAnimationFrame;
+
 class Engine {
 
     constructor(selector) {
@@ -12,7 +23,6 @@ class Engine {
         this.canvas.height = window.innerHeight;
         this.context       = this.canvas.getContext('2d');
         this.clock         = new Clock();
-        this.continue      = true;
         this.fps           = 100;
         this.scene         = null;
 
@@ -36,16 +46,20 @@ class Engine {
             throw new Error('Scene instance expected');
         }
 
+        var then = Date.now();
+
         var process = () => {
-            setTimeout(() => {
+            requestAnimationFrame(process);
+            var interval = 1000 / this.fps;
+            var now = Date.now();
+            var delta = now - then;
+            if (now > interval) {
+                then = now - (delta % interval);
                 var time = this.clock.getTime();
                 this.scene.update(time);
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.scene.draw(time);
-                if (this.continue) {
-                    process();
-                }
-            }, 1000 / this.fps);
+            }
         };
 
         process();

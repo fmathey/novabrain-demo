@@ -13,8 +13,8 @@ class Entity extends Core.Entity {
         this.velocity       = 0.01 + Math.random() * 0.005;
         this.color          = color || Core.Color.grey();
         this.lifeTime       = 10000 + Math.random() * 60000;
-        this.moveTimeout    = new Core.Timeout(100, 600);
-        this.fitnessTimeout = new Core.Timeout(10000);
+        this.moveTimeout    = new Core.Timeout(100, 800);
+        this.fitnessTimeout = new Core.Timeout(10000, 13000);
     }
 
     find() {

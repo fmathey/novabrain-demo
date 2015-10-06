@@ -3,11 +3,16 @@
 class Clock {
 
     constructor() {
-        this.startTime = (new Date()).getTime();
+        this.reset();
+    }
+
+    reset() {
+        this.startTime = Date.now();
+        return this;
     }
 
     getTime() {
-        return (new Date()).getTime() - this.startTime;
+        return Date.now() - this.startTime;
     }
 }
 
