@@ -1,7 +1,7 @@
 'use strict';
 
-var Clock = require('./clock.js');
-var Scene = require('./scene.js');
+var Clock = require('./clock');
+var Scene = require('./scene');
 
 class Engine {
 

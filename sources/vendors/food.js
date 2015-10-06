@@ -1,6 +1,6 @@
 'use strict';
 
-var Color = require('./color.js');
+var Color = require('./core').Color;
 
 class Food {
     constructor(scene, position) {

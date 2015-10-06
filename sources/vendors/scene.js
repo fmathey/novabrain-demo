@@ -1,21 +1,19 @@
 'use strict';
 
-var Vector  = require('./vector.js');
-var Area    = require('./area.js');
-var Entity  = require('./entity.js');
-var Food    = require('./food.js');
-var Timeout = require('./timeout.js');
-var Stats   = require('./stats.js');
+var Core    = require('./core');
+var Entity  = require('./entity');
+var Food    = require('./food');
 
-class Scene {
+class Scene extends Core.Scene {
 
     constructor(engine) {
-        this.engine      = engine;
+        super(engine);
+
         this.friction    = 0.01;
         this.entities    = [];
         this.foods       = [];
-        this.stats       = new Stats();
-        this.feedTimeout = new Timeout(500, 1000);
+        this.stats       = new Core.Stats();
+        this.feedTimeout = new Core.Timeout(500, 1000);
 
         this.stats.set('entities.count');
         this.stats.set('family0.count');
@@ -26,25 +24,25 @@ class Scene {
 
     update(time) {
 
-        this.feedTimeout.update(time, () => {
-            this.feed();
-        });
+        if (this.entities.length) {
+            this.feedTimeout.update(time, () => {
+                this.feed();
+            });
 
-        for (var i in this.entities) {
-            if (this.entities[i].lifeTime > time) {
-                this.entities[i].update(time);
-            } else {
-                this.stats.decrement('family' + this.entities[i].family + '.count');
-                this.entities.splice(i, 1);
-                this.stats.set('entities.count', this.entities.length);
-                this.feedTimeout = new Timeout(
-                    500 + 20000 / this.entities.length,
-                    1000 + 10000 / this.entities.length
-                );
+            for (var i in this.entities) {
+                if (this.entities[i].lifeTime > time) {
+                    this.entities[i].update(time);
+                } else {
+                    this.stats.decrement('family' + this.entities[i].family + '.count');
+                    this.entities.splice(i, 1);
+                    this.stats.set('entities.count', this.entities.length);
+                    this.feedTimeout = new Core.Timeout(
+                        500 + 20000 / this.entities.length,
+                        1000 + 10000 / this.entities.length
+                    );
+                }
             }
         }
-
-        return this;
     }
 
     draw(time) {
@@ -70,8 +68,6 @@ class Scene {
         }
 
         ctx.restore();
-
-        return this;
     }
 
     populate(count, area, family, color) {
@@ -92,45 +88,6 @@ class Scene {
             this.foods.push(new Food(this, this.getRandomPosition(area)));
         }
         return this;
-    }
-
-    getContext() {
-        return this.engine.context;
-    }
-
-    getWidth() {
-        return this.engine.canvas.width;
-    }
-
-    getHeight() {
-        return this.engine.canvas.height;
-    }
-
-    getSize() {
-        return new Vector(
-            this.getWidth(),
-            this.getHeight()
-        );
-    }
-
-    getArea(offset) {
-        offset = offset || 0;
-        return new Area(0, 0, this.getWidth(), this.getHeight(), offset);
-    }
-
-    getCenter() {
-        return new Vector(
-            this.getWidth() / 2,
-            this.getHeight() / 2
-        );
-    }
-
-    getRandomPosition(area) {
-        area = area || this.getArea(50);
-        return new Vector(
-            area.x1 + Math.random() * area.x2,
-            area.y1 + Math.random() * area.y2
-        );
     }
 }
 

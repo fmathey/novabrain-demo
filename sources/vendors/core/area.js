@@ -1,6 +1,6 @@
 'use strict';
 
-var Vector = require('./vector.js');
+var Vector = require('./vector');
 
 class Area {
 

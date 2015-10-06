@@ -1,7 +1,8 @@
-var Engine = require('./vendors/engine.js');
-var Scene  = require('./vendors/scene.js');
-var Area   = require('./vendors/area.js');
-var Color  = require('./vendors/color.js');
+var Core   = require('./vendors/core');
+var Engine = Core.Engine;
+var Area   = Core.Area;
+var Color  = Core.Color;
+var Scene  = require('./vendors/scene');
 
 var engine = new Engine('#Demo-canvas');
 var scene  = new Scene(engine);
