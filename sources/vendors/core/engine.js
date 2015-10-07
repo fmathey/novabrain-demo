@@ -1,7 +1,7 @@
 'use strict';
 
 var Clock = require('./clock');
-var Scene = require('./scene');
+var Stage = require('./stage');
 
 var requestAnimationFrame = (function() {
     return (
@@ -24,7 +24,7 @@ class Engine {
         this.context       = this.canvas.getContext('2d');
         this.clock         = new Clock();
         this.fps           = 100;
-        this.scene         = null;
+        this.stage         = null;
 
         window.onresize = (e) => {
             this.canvas.width  = window.innerWidth;
@@ -32,18 +32,18 @@ class Engine {
         };
     }
 
-    load(scene) {
-        if (!(scene instanceof Scene)) {
-            throw new Error('Scene instance expected');
+    load(stage) {
+        if (!(stage instanceof Stage)) {
+            throw new Error('Stage instance expected');
         }
-        this.scene = scene;
+        this.stage = stage;
         return this;
     }
 
     run() {
 
-        if (!(this.scene instanceof Scene)) {
-            throw new Error('Scene instance expected');
+        if (!(this.stage instanceof Stage)) {
+            throw new Error('Stage instance expected');
         }
 
         var then = Date.now();
@@ -56,9 +56,9 @@ class Engine {
             if (now > interval) {
                 then = now - (delta % interval);
                 var time = this.clock.getTime();
-                this.scene.update(time);
+                this.stage.update(time);
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.scene.draw(time);
+                this.stage.draw(time);
             }
         };
 

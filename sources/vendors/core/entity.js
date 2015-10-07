@@ -1,20 +1,20 @@
 'use strict';
 
-var Scene = require('./scene');
+var Stage = require('./stage');
 var Vector = require('./vector');
 
 class Entity {
-    constructor(scene, position) {
+    constructor(stage, position) {
 
-        if (!(scene instanceof Scene)) {
-            throw new Error('Scene instance expected');
+        if (!(stage instanceof Stage)) {
+            throw new Error('Stage instance expected');
         }
 
         if (!(position instanceof Vector)) {
             throw new Error('Vector instance expected');
         }
 
-        this.scene = scene;
+        this.stage = stage;
         this.position = position;
     }
 

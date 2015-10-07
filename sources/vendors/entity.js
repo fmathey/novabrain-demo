@@ -3,9 +3,9 @@
 var Core = require('./core');
 
 class Entity extends Core.Entity {
-    constructor(scene, position, family, color) {
+    constructor(stage, position, family, color) {
 
-        super(scene, position);
+        super(stage, position);
 
         this.family         = family || 0;
         this.size           = 10;
@@ -20,15 +20,15 @@ class Entity extends Core.Entity {
     find() {
         var target = null;
 
-        for (var i in this.scene.foods) {
-            var food = this.scene.foods[i];
+        for (var i in this.stage.foods) {
+            var food = this.stage.foods[i];
             var position = this.position;
             if (!target || position.getDistance(food.position) <= position.getDistance(target)) {
                 target = food.position;
             }
         }
 
-        target = target || this.scene.getRandomPosition();
+        target = target || this.stage.getRandomPosition();
 
         return target;
     }
@@ -54,19 +54,19 @@ class Entity extends Core.Entity {
             this.move.apply(this.target(this.find()));
         });
 
-        this.move.applyForce(this.scene.friction);
+        this.move.applyForce(this.stage.friction);
         this.move.applyForce(this.velocity);
         this.position.apply(this.move);
 
-        this.scene.getArea().constrain(this.position, this.size + 1);
+        this.stage.getArea().constrain(this.position, this.size + 1);
 
-        for (var i in this.scene.foods) {
-            var food = this.scene.foods[i];
+        for (var i in this.stage.foods) {
+            var food = this.stage.foods[i];
             if (this.position.getDistance(food.position) <= this.size + 2) {
                 var increment = Math.round(food.size / 3);
-                this.scene.foods.splice(i, 1);
+                this.stage.foods.splice(i, 1);
                 this.size += increment;
-                this.scene.stats.increment('family' + this.family + '.foods', increment);
+                this.stage.stats.increment('family' + this.family + '.foods', increment);
                 this.lifeTime += increment * 5000;
             }
         }
@@ -76,7 +76,7 @@ class Entity extends Core.Entity {
 
     draw(time) {
 
-        var ctx = this.scene.getContext();
+        var ctx = this.stage.getContext();
 
         ctx.save();
 

@@ -4,7 +4,7 @@ var Core    = require('./core');
 var Entity  = require('./entity');
 var Food    = require('./food');
 
-class Scene extends Core.Scene {
+class Stage extends Core.Stage {
 
     constructor(engine) {
         super(engine);
@@ -97,4 +97,4 @@ class Scene extends Core.Scene {
     }
 }
 
-module.exports = Scene;
+module.exports = Stage;

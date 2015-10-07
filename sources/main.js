@@ -1,8 +1,8 @@
 var Core   = require('./vendors/core');
-var Scene  = require('./vendors/scene');
+var Stage  = require('./vendors/stage');
 
 var engine = new Core.Engine('#Demo-canvas');
-var scene  = new Scene(engine);
+var stage  = new Stage(engine);
 
-engine.load(scene).run();
+engine.load(stage).run();
 

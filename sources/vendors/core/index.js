@@ -6,6 +6,6 @@ module.exports = {
     Stats   : require('./stats'),
     Timeout : require('./timeout'),
     Vector  : require('./vector'),
-    Scene   : require('./scene'),
+    Stage   : require('./stage'),
     Entity  : require('./entity'),
 };

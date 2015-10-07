@@ -3,7 +3,7 @@
 var Area    = require('./area');
 var Vector  = require('./vector');
 
-class Scene {
+class Stage {
 
     constructor(engine) {
         this.engine = engine;
@@ -53,4 +53,4 @@ class Scene {
     }
 }
 
-module.exports = Scene;
+module.exports = Stage;
