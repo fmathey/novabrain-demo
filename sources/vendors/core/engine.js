@@ -6,9 +6,15 @@ var Stage = require('./stage');
 var requestAnimationFrame = (function() {
     return (
         window.requestAnimationFrame ||
+        window.oRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
-        window.msRequestAnimationFrame
+        window.msRequestAnimationFrame ||
+        function(cb, elt) {
+            window.setTimeout(function() {
+                cb(+new Date());
+            }, 1000 / 60);
+        }
     );
 })();
 
@@ -18,17 +24,23 @@ class Engine {
 
     constructor(selector) {
 
-        this.canvas        = document.querySelector(selector);
-        this.canvas.width  = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.context       = this.canvas.getContext('2d');
-        this.clock         = new Clock();
-        this.fps           = 100;
-        this.stage         = null;
+        this.canvas             = document.querySelector(selector);
+        this.canvasCache        = document.createElement('canvas');
+        this.canvas.width       = window.innerWidth;
+        this.canvasCache.width  = window.innerWidth;
+        this.canvas.height      = window.innerHeight;
+        this.canvasCache.height = window.innerHeight;
+        this.context            = this.canvas.getContext('2d');
+        this.contextCache       = this.canvasCache.getContext('2d');
+        this.clock              = new Clock();
+        this.fps                = 100;
+        this.stage              = null;
 
         window.onresize = (e) => {
             this.canvas.width  = window.innerWidth;
             this.canvas.height = window.innerHeight;
+            this.canvasCache.width  = window.innerWidth;
+            this.canvasCache.height = window.innerHeight;
         };
     }
 
@@ -57,8 +69,10 @@ class Engine {
                 then = now - (delta % interval);
                 var time = this.clock.getTime();
                 this.stage.update(time);
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.contextCache.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.stage.draw(time);
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.context.drawImage(this.canvasCache, 0, 0);
             }
         };
 

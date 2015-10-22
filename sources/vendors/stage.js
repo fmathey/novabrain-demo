@@ -25,7 +25,7 @@ class Stage extends Core.Stage {
         var area2  = new Core.Area(0, this.getHeight() - this.getHeight() / 4, this.getWidth(), this.getHeight(), 50);
 
         this.populate(50, area1, 0, Core.Color.black());
-        this.populate(50, area2, 1, new Core.Color(223,90,73));
+        this.populate(50,area2, 1, new Core.Color(223,90,73));
     }
 
     update(time) {

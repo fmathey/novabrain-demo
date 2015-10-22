@@ -14,7 +14,7 @@ class Stage {
     draw(time) {}
 
     getContext() {
-        return this.engine.context;
+        return this.engine.contextCache;
     }
 
     getWidth() {
